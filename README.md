@@ -4,6 +4,12 @@ Middleware for Connect (node.js) for handling your static assets.
 
 <img src="http://mape.me/assetmanager.png" alt="">
 
+## Installation
+
+Via [npm](http://github.com/isaacs/npm):
+
+    $ npm install connect-assetmanager
+
 ## What does it allow you to do?
 * Merge and minify CSS/javascript files
 * Auto regenerates the cache on file change so no need for restart of server or manual action.
