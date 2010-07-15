@@ -148,8 +148,18 @@ When debug is set to true the files will not be minified, but they will be group
                     if (err) {
                         throw err;
                     }
-                    content = content.replace(new RegExp(filePath), 'data:image/png;base64,'+base64_encode(data));
-                    handleFiles(content, path, index, lastFile, handleFiles);
+                    var fileData = data;
+                    fs.stat(root+filePath, function(err, data)
+                    {
+                        if (err) {
+                            throw err;
+                        }
+                        // Internet Explorer 8 limits data URIs to a maximum length of 32 KB
+                        if (data.size < 32768) {
+                            content = content.replace(new RegExp(filePath), 'data:image/png;base64,'+base64_encode(fileData));
+                        }
+                        handleFiles(content, path, index, lastFile, handleFiles);
+                    });
                 });
             } else {
                 callback(content);
