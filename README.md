@@ -10,6 +10,10 @@ Via [npm](http://github.com/isaacs/npm):
 
     $ npm install connect-assetmanager
 
+## Handy pre/post hooks
+
+Make sure to check out [connect-assetmanager-handlers](http://github.com/mape/connect-assetmanager-handlers) for useful hooks you can use (inline base64 for image, vendor prefix fixes for example)
+
 ## What does it allow you to do?
 * Merge and minify CSS/javascript files
 * Auto regenerates the cache on file change so no need for restart of server or manual action.
@@ -21,7 +25,6 @@ Via [npm](http://github.com/isaacs/npm):
 * __Replace all url(references to images) with inline base64 data which remove all would be image HTTP requests.__
 * Strip all IE specific code for all other browsers.
 * Fix all the vendor prefixes (-ms -moz -webkit -o) for things like border-radius instead of having to type all each and every time.
-
 
 ## Speed test (it does just fine)
 ### Running with
@@ -112,67 +115,11 @@ When debug is set to true the files will not be minified, but they will be group
     var sys = require('sys');
     var fs = require('fs');
     var Connect = require('connect');
-    var assetManager = require('./connect-assetmanager/lib/assetmanager');
-    var base64_encode = require('node-base64/base64').encode;
+    var assetManager = require('connect-assetmanager');
+    var assetHandler = require('connect-assetmanager-handlers');
     
     var root = __dirname + '/public';
     
-    // Fix the vendor prefixes
-    var fixVendorPrefixes = function (fileContent, path, index, lastFile, callback) {
-        // -vendor-border-radius: 5px;
-        callback(fileContent.replace(/-vendor-([^:]+): *([^;]+)/g, '$1: $2; -moz-$1: $2; -webkit-$1: $2; -o-$1: $2; -ms-$1: $2;'));
-    };
-    
-    // Dumb fix for simple top down gradients.
-    var fixGradients = function (fileContent, path, index, lastFile, callback) {
-        // gradient: rgba(0,0,0,0.5)_#000;
-        callback(fileContent.replace(/gradient: *([^_]+)_([^;]+)/g, 'background: -webkit-gradient(linear, 0% 0%, 0% 100%, from($1), to($2));background: -moz-linear-gradient(top, $1, $2);'));
-    };
-    
-    // Replace all custom data-url with standard url since MSIE can't handle base64.
-    var dummyReplaceImageRefToBase64 = function (fileContent, path, index, lastFile, callback) {
-        // background-image: data-url(/img/button.png);
-        callback(fileContent.replace(/data-url/ig,'url'));
-    };
-    
-    // Replace all image references with base64 to reduce base64
-    var replaceImageRefToBase64 = function (fileContent, path, index, lastFile, callback) {
-        // background-image: data-url(/img/button.png);
-        var files = fileContent.match(/data-url\(([^)]+)\)/g);
-        if (!files) {
-            callback(fileContent);
-            return;
-        }
-        fileContent = fileContent.replace(/data-url/g,'url');
-        var callIndex = -1;
-    
-        var handleFiles = function(content, recursion) {
-            if (callIndex < files.length-1) {
-                callIndex++;
-                var filePath = files[callIndex].replace(/(data-url\(|\))/g,'');
-                fs.readFile(root+filePath, function (err, data) {
-                    if (err) {
-                        throw err;
-                    }
-                    var fileData = data;
-                    fs.stat(root+filePath, function(err, data)
-                    {
-                        if (err) {
-                            throw err;
-                        }
-                        // Internet Explorer 8 limits data URIs to a maximum length of 32 KB
-                        if (data.size < 32768) {
-                            content = content.replace(new RegExp(filePath), 'data:image/png;base64,'+base64_encode(fileData));
-                        }
-                        handleFiles(content, path, index, lastFile, handleFiles);
-                    });
-                });
-            } else {
-                callback(content);
-            }
-        };
-        handleFiles(fileContent, handleFiles);
-    };
     
     var Server = module.exports = Connect.createServer();
     
@@ -201,14 +148,17 @@ When debug is set to true the files will not be minified, but they will be group
             , 'preManipulate': {
                 // Regexp to match user-agents including MSIE.
                 'MSIE': [
-                    fixVendorPrefixes
-                    , dummyReplaceImageRefToBase64
+                    assetHandler.yuiCssOptimize
+                    , assetHandler.fixVendorPrefixes
+                    , assetHandler.fixGradients
+                    , assetHandler.stripDataUrlsPrefix
                 ],
                 // Matches all (regex start line)
                 '^': [
-                    fixVendorPrefixes
-                    , fixGradients
-                    , replaceImageRefToBase64
+                    assetHandler.yuiCssOptimize
+                    , assetHandler.fixVendorPrefixes
+                    , assetHandler.fixGradients
+                    , assetHandler.replaceImageRefToBase64(root)
                 ]
             }
         }
