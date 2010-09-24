@@ -20,6 +20,7 @@ Make sure to check out [connect-assetmanager-handlers](http://github.com/mape/co
 * Run pre/post manipulation on the files
   * __Use regex to match user agent so you can serve different modified versions of your packed assets based on the requesting browser.__
 * Supplies a reference to the modified dates for all groups through assetManager(groups).cacheTimestamps which can be used for cache invalidation in templates.
+* Wildcard add files from dir
 
 ### Nifty things you can do with the pre/post manipulation
 * __Replace all url(references to images) with inline base64 data which remove all would be image HTTP requests.__
@@ -69,7 +70,9 @@ The path to the folder containing the files.
 ### files (array) - required
 An array of strings containing the filenames of all files in the group.
 
-    files: ['lib.js', 'page.js']
+If you want to add all files from the path supplied add '*'. It will insert the files at the position of the *.
+
+    files: ['lib.js', '*', 'page.js']
 
 ### route (regex as string) - required
 The route that will be matched by Connect.
