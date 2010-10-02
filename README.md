@@ -84,7 +84,7 @@ The type of data you are trying to optimize, 'javascript' and 'css' is built int
 
     dataType: 'css'
 
-### preManipulate (object containing functions)
+### preManipulate (array containing functions)
 There are hooks in the assetManager that allow you to programmaticly alter the source of the files you are grouping.
 This can be handy for being able to use custom CSS types in the assetManager or fixing stuff like vendor prefixes in a general fashion.
 
@@ -103,9 +103,29 @@ This can be handy for being able to use custom CSS types in the assetManager or 
         ]
     }
 
-### postManipulate (object containing functions)
+### postManipulate (array containing functions)
 Same as preManipulate but runs after the files are merged and minified.
 
+The functions supplied look like this:
+
+    function (file, path, index, isLast, callback) {
+        if (path.match(/filename\.js/)) {
+            callback(null, file.replace(/string/mig, 'replaceWithThis'));
+        } else {
+            callback(null, file);
+        }
+    }
+### serveModify (req, res, response, callback)
+Allows you do to modify the cached response on a per request basis.
+
+    function(req, res, response, callback) {
+        if (externalVariable) {
+            // Return empty asset
+            response.length = 1;
+            response.contentBuffer = new Buffer(' ');
+        }
+        callback(response);
+    }
 ### stale (boolean)
 Incase you want to use the asset manager with optimal performance you can set stale to true.
 
