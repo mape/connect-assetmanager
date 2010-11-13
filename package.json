@@ -1,12 +1,16 @@
 {
   "name" : "connect-assetmanager",
   "description" : "Middleware for Connect (node.js) for handling your static assets.",
-  "version" : "0.0.16",
+  "version" : "0.0.17",
   "author" : "Mathias Pettersson <mape@mape.me>",
   "engines" : ["node"],
   "directories" : { "lib" : "./lib" },
   "main" : "./lib/assetmanager",
   "repository" : [
     { "type":"git", "url":"http://github.com/mape/connect-assetmanager.git" }
-  ]
+  ],
+  "dependencies" : {
+    "request" : ">=0.10.0",
+    "step" : ">=0.0.3"
+  }
 }
