@@ -71,8 +71,9 @@ The path to the folder containing the files.
 An array of strings containing the filenames of all files in the group.
 
 If you want to add all files from the path supplied add '*'. It will insert the files at the position of the *.
+You can also use a regexp to match files or use external urls.
 
-    files: ['lib.js', '*', 'page.js']
+    files: ['http://code.jquery.com/jquery-latest.js', /jquery.*/ , '*', 'page.js']
 
 ### route (regex as string) - required
 The route that will be matched by Connect.
