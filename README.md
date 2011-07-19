@@ -19,7 +19,7 @@ Make sure to check out [connect-assetmanager-handlers](http://github.com/mape/co
 * Auto regenerates the cache on file change so no need for restart of server or manual action.
 * Run pre/post manipulation on the files
   * __Use regex to match user agent so you can serve different modified versions of your packed assets based on the requesting browser.__
-* Supplies a reference to the modified dates for all groups through assetManager(groups).cacheTimestamps which can be used for cache invalidation in templates.
+* Supplies a reference to the modified dates for all groups through assetManager().cacheTimestamps[groupName] as well as md5 hashes assetManager().cacheHashes[groupName] which can be used for cache invalidation in templates.
 * Wildcard add files from dir
 
 ### Nifty things you can do with the pre/post manipulation
