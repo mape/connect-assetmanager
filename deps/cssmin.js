@@ -28,7 +28,7 @@ YAHOO.compressor.cssmin = function (css, linebreakpos){
         token = '';
 
     // preserve strings so their content doesn't get accidentally minified
-    css = css.replace(/("([^\\"]|\\.|\\)*")|('([^\\']|\\.|\\)*')/g, function(match) {
+    css = css.replace(/("([^\\"\n]|\\.|\\)*")|('([^\\'\n]|\\.|\\)*')/g, function(match) {
         var quote = match[0];
         preservedTokens.push(match.slice(1, -1));
         return quote + "___YUICSSMIN_PRESERVED_TOKEN_" + (preservedTokens.length - 1) + "___" + quote;
