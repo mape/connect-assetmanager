@@ -136,8 +136,6 @@ This means that there are no checks for file changes and the cache will therefor
 When debug is set to true the files will not be minified, but they will be grouped into one file and modified.
 
 ## Example usage
-    var sys = require('sys');
-    var fs = require('fs');
     var Connect = require('connect');
     var assetManager = require('connect-assetmanager');
     var assetHandler = require('connect-assetmanager-handlers');
