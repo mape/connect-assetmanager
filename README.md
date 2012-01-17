@@ -190,9 +190,6 @@ When debug is set to true the files will not be minified, but they will be group
 
     var assetsManagerMiddleware = assetManager(assetManagerGroups);
     Server.use('/'
-        , Connect.conditionalGet()
-        , Connect.cache()
-        , Connect.gzip()
         , assetsManagerMiddleware
-        , Connect.staticProvider(root)
+        , Connect.static(root)
     );
