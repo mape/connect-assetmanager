@@ -361,7 +361,7 @@ function jsmin(comment, input, level) {
   }
 
   jsmin.oldSize = input.length;
-  ret = m(input);
+  var ret = m(input);
   jsmin.newSize = ret.length;
 
   return comment + ret;
