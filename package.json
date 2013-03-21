@@ -8,10 +8,11 @@
   "directories" : { "lib" : "./lib" },
   "main" : "./lib/assetmanager",
   "repository" : [
-    { "type":"git", "url":"http://github.com/mape/connect-assetmanager.git" }
+    { "type":"git", "url":"http://github.com/lordkada/connect-assetmanager.git" }
   ],
   "dependencies" : {
     "request" : ">=0.10.0",
-    "step" : ">=0.0.3"
+    "step" : ">=0.0.3",
+    "async" : "0.1.22"
   }
 }
