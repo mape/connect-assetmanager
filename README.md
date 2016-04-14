@@ -116,16 +116,18 @@ The functions supplied look like this:
             callback(null, file);
         }
     }
-### serveModify (req, res, response, callback)
-Allows you do to modify the cached response on a per request basis.
+### serveModify (req, res, headers, response, callback)
+Allows you do to modify the cached headers and response on a per request basis.
 
-    function(req, res, response, callback) {
+    function(req, res, headers, response, callback) {
         if (externalVariable) {
             // Return empty asset
             response.length = 1;
             response.contentBuffer = new Buffer(' ');
         }
-        callback(response);
+        // Modify default 365 days Cache-Control to 1 hour
+        headers['Cache-Control'] = 'public,max-age=' + 360;
+        callback(headers, response);
     }
 ### stale (boolean)
 Incase you want to use the asset manager with optimal performance you can set stale to true.
