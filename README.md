@@ -89,44 +89,52 @@ The type of data you are trying to optimize, 'javascript' and 'css' is built int
 There are hooks in the assetManager that allow you to programmaticly alter the source of the files you are grouping.
 This can be handy for being able to use custom CSS types in the assetManager or fixing stuff like vendor prefixes in a general fashion.
 
-    'preManipulate': {
-        // Regexp to match user-agents including MSIE.
-        'MSIE': [
-            generalManipulation
-            , msieSpecificManipulation
-        ],
-        // Matches all (regex start line)
-        '^': [
-            generalManipulation
-            , fixVendorPrefixes
-            , fixGradients
-            , replaceImageRefToBase64
-        ]
-    }
+```js
+'preManipulate': {
+    // Regexp to match user-agents including MSIE.
+    'MSIE': [
+        generalManipulation
+        , msieSpecificManipulation
+    ],
+    // Matches all (regex start line)
+    '^': [
+        generalManipulation
+        , fixVendorPrefixes
+        , fixGradients
+        , replaceImageRefToBase64
+    ]
+}
+```
 
 ### postManipulate (array containing functions)
 Same as preManipulate but runs after the files are merged and minified.
 
 The functions supplied look like this:
 
-    function (file, path, index, isLast, callback) {
-        if (path.match(/filename\.js/)) {
-            callback(null, file.replace(/string/mig, 'replaceWithThis'));
-        } else {
-            callback(null, file);
-        }
+```js
+function (file, path, index, isLast, callback) {
+    if (path.match(/filename\.js/)) {
+        callback(null, file.replace(/string/mig, 'replaceWithThis'));
+    } else {
+        callback(null, file);
     }
+}
+```
+
 ### serveModify (req, res, response, callback)
 Allows you do to modify the cached response on a per request basis.
 
-    function(req, res, response, callback) {
-        if (externalVariable) {
-            // Return empty asset
-            response.length = 1;
-            response.contentBuffer = new Buffer(' ');
-        }
-        callback(response);
+```js
+function(req, res, response, callback) {
+    if (externalVariable) {
+        // Return empty asset
+        response.length = 1;
+        response.contentBuffer = new Buffer(' ');
     }
+    callback(response);
+}
+```
+
 ### stale (boolean)
 Incase you want to use the asset manager with optimal performance you can set stale to true.
 
@@ -136,60 +144,63 @@ This means that there are no checks for file changes and the cache will therefor
 When debug is set to true the files will not be minified, but they will be grouped into one file and modified.
 
 ## Example usage
-    var sys = require('sys');
-    var fs = require('fs');
-    var Connect = require('connect');
-    var assetManager = require('connect-assetmanager');
-    var assetHandler = require('connect-assetmanager-handlers');
-    
-    var root = __dirname + '/public';
-    
-    
-    var Server = module.exports = Connect.createServer();
-    
-    Server.use('/',
-        Connect.responseTime()
-        , Connect.logger()
-    );
-    
-    var assetManagerGroups = {
-        'js': {
-            'route': /\/static\/js\/[0-9]+\/.*\.js/
-            , 'path': './public/js/'
-            , 'dataType': 'javascript'
-            , 'files': [
-                'jquery.js'
-                , 'jquery.client.js'
-            ]
-        }, 'css': {
-            'route': /\/static\/css\/[0-9]+\/.*\.css/
-            , 'path': './public/css/'
-            , 'dataType': 'css'
-            , 'files': [
-                'reset.css'
-                , 'style.css'
-            ]
-            , 'preManipulate': {
-                // Regexp to match user-agents including MSIE.
-                'MSIE': [
-                    assetHandler.yuiCssOptimize
-                    , assetHandler.fixVendorPrefixes
-                    , assetHandler.fixGradients
-                    , assetHandler.stripDataUrlsPrefix
-                ],
-                // Matches all (regex start line)
-                '^': [
-                    assetHandler.yuiCssOptimize
-                    , assetHandler.fixVendorPrefixes
-                    , assetHandler.fixGradients
-                    , assetHandler.replaceImageRefToBase64(root)
-                ]
-            }
-        }
-    };
 
-    var assetsManagerMiddleware = assetManager(assetManagerGroups);
-    Server.use('/'
-        , assetsManagerMiddleware
-        , Connect.static(root)
-    );
+```js
+var sys = require('sys');
+var fs = require('fs');
+var Connect = require('connect');
+var assetManager = require('connect-assetmanager');
+var assetHandler = require('connect-assetmanager-handlers');
+
+var root = __dirname + '/public';
+
+
+var Server = module.exports = Connect.createServer();
+
+Server.use('/',
+    Connect.responseTime()
+    , Connect.logger()
+);
+
+var assetManagerGroups = {
+    'js': {
+        'route': /\/static\/js\/[0-9]+\/.*\.js/
+        , 'path': './public/js/'
+        , 'dataType': 'javascript'
+        , 'files': [
+            'jquery.js'
+            , 'jquery.client.js'
+        ]
+    }, 'css': {
+        'route': /\/static\/css\/[0-9]+\/.*\.css/
+        , 'path': './public/css/'
+        , 'dataType': 'css'
+        , 'files': [
+            'reset.css'
+            , 'style.css'
+        ]
+        , 'preManipulate': {
+            // Regexp to match user-agents including MSIE.
+            'MSIE': [
+                assetHandler.yuiCssOptimize
+                , assetHandler.fixVendorPrefixes
+                , assetHandler.fixGradients
+                , assetHandler.stripDataUrlsPrefix
+            ],
+            // Matches all (regex start line)
+            '^': [
+                assetHandler.yuiCssOptimize
+                , assetHandler.fixVendorPrefixes
+                , assetHandler.fixGradients
+                , assetHandler.replaceImageRefToBase64(root)
+            ]
+        }
+    }
+};
+
+var assetsManagerMiddleware = assetManager(assetManagerGroups);
+Server.use('/'
+    , assetsManagerMiddleware
+    , Connect.static(root)
+);
+```
